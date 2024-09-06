@@ -6,8 +6,12 @@ import threading
 #for every chat client
 
 def listen_for_messages(socket):
+    #we keep listening for anything from the server
+
     while True:
         data= socket.recv(1024)
+        #we pause and listen here
+        #If there's something, we display
         if data:
             print()
             print(data.decode('utf-8'))
