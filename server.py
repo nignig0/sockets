@@ -2,34 +2,41 @@
 import socket
 import threading
 
-def listen_for_connection(socket):
-    conn, addr = socket.accept()
-    print(f'Connection incoming from {addr}')
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    client_socket.connect()
+client_sockets = []
 
 def handle_client(client_socket):
-    while True:
-        data = 
+    try:
+        while True:
+            print("Listening for client data")
+            data = client_socket.recv(1024)
+            print("Recieved data")
+            if data:
+                print('recieved data here')
+                for client in client_sockets:
+                    if client == client_socket:
+                        continue
+                    client.sendall(data)
+    except Exception as e:
+        print("There was an error: ", e)
+        client_socket.close()
+        client_sockets.remove(client_socket)
+
 
 def start_server():
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(('127.0.0.1', 12345))
-        s.listen(2)
-        print('Listening for connections')
-        
-        thread_one = threading.Thread(target=listen_for_connection, args = (s,), daemon=True)
-        #we create a daemon thread that listens for connections in the background
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.bind(('localhost', 12345))
+        server.listen(5)
+
+        while True:
+            
+            client_socket, addr = server.accept()
+            print(f"connection coming from {addr}")
+            client_sockets.append(client_socket)
+            thread = threading.Thread(target = handle_client, args = (client_socket,))
+            thread.start()
 
         
-        while True:
-            data = s.recv(1024)
-            if data:
-                s.sendall(data)
-        conn.close()
-        s.close()
     except Exception as e:
         print(e)
         

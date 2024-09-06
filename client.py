@@ -1,8 +1,16 @@
 import socket
+import threading
 
 #client code
 #Trying to build a chat room and this is the code
 #for every chat client
+
+def listen_for_messages(socket):
+    while True:
+        data= socket.recv(1024)
+        if data:
+            print()
+            print(data.decode('utf-8'))
 
 def start_client():
     try:
@@ -12,16 +20,16 @@ def start_client():
         print('Trying to connect')
         s.connect(('127.0.0.1', 12345))
         print('Connected to the server!')
-        print('To disconnect, press q')
+        print('Enter your message! To disconnect, press q')
+        thread = threading.Thread(target = listen_for_messages, args = (s,))
+        thread.start()
         message = ''
         while message!= 'q':
-            data = s.recv(1024)
-            if data:
-                print(data)
-            message = input('Enter a message to send to the server')
-            s.sendall(f'{username}: {message}').encode('utf-8')
+            message = input()
+            s.sendall(f"{username}: {message}".encode('utf-8'))
     
         s.close()
+        exit()
     except Exception as e:
         print(e)
         
